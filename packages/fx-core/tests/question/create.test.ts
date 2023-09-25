@@ -11,6 +11,7 @@ import {
   Question,
   SingleSelectQuestion,
   UserInteraction,
+  err,
   ok,
 } from "@microsoft/teamsfx-api";
 import axios from "axios";
@@ -1172,7 +1173,13 @@ describe("scaffold question", () => {
             },
             auth: { type: "none" },
           };
-          const getStub = sandbox.stub(axios, "get").resolves({ status: 200, data: manifest });
+          const getStub = sandbox.stub(axios, "get").callsFake(async (url: string, config) => {
+            if (url === "https://test.com/.well-known/ai-plugin.json") {
+              return { data: manifest, status: 200 };
+            } else {
+              throw err("cannot get");
+            }
+          });
           sandbox
             .stub(SpecParser.prototype, "validate")
             .resolves({ status: ValidationStatus.Valid, errors: [], warnings: [] });
@@ -1185,7 +1192,7 @@ describe("scaffold question", () => {
 
           assert.isUndefined(validationRes);
           assert.isUndefined(additionalValidationRes);
-          assert.equal(getStub.firstCall.args[0], "https://test.com/.well-known/ai-plugin.json");
+          assert.equal(getStub.firstCall.args[0], "https://test.com");
         });
 
         it("remove ending slash before generating manifest URL and cannot load openAI plugin manifest", async () => {
@@ -1201,7 +1208,13 @@ describe("scaffold question", () => {
             },
             auth: "oauth",
           };
-          const getStub = sandbox.stub(axios, "get").throws(new Error("error1"));
+          const getStub = sandbox.stub(axios, "get").callsFake(async (url: string, config) => {
+            if (url === "https://test.com/.well-known/ai-plugin.json") {
+              return { data: manifest, status: 200 };
+            } else {
+              throw err("cannot get");
+            }
+          });
           sandbox
             .stub(SpecParser.prototype, "validate")
             .resolves({ status: ValidationStatus.Valid, errors: [], warnings: [] });
@@ -1213,7 +1226,7 @@ describe("scaffold question", () => {
           );
 
           assert.isFalse(res === undefined);
-          assert.equal(getStub.firstCall.args[0], "https://test.com/.well-known/ai-plugin.json");
+          assert.equal(getStub.firstCall.args[0], "https://test.com");
         });
 
         it("invalid openAI plugin manifest spec: missing property", async () => {

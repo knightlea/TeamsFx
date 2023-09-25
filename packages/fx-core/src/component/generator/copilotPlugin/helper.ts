@@ -81,26 +81,33 @@ export class OpenAIPluginManifestHelper {
   static async loadOpenAIPluginManifest(input: string): Promise<OpenAIPluginManifest> {
     input = input.trim();
     let path = input.endsWith("/") ? input.substring(0, input.length - 1) : input;
-    if (!input.toLowerCase().endsWith(manifestFilePath)) {
-      path = path + manifestFilePath;
-    }
     if (!input.toLowerCase().startsWith("https://") && !input.toLowerCase().startsWith("http://")) {
       path = "https://" + path;
     }
 
     try {
+      // try to get the URL directly
       const res: AxiosResponse<any> = await sendRequestWithRetry(async () => {
         return await axios.get(path);
       }, 3);
 
       return res.data;
     } catch (e) {
-      throw new UserError(
-        componentName,
-        "loadOpenAIPluginManifest",
-        getLocalizedString("error.copilotPlugin.openAiPluginManifest.CannotGetManifest", path),
-        getLocalizedString("error.copilotPlugin.openAiPluginManifest.CannotGetManifest", path)
-      );
+      // if user inputs the domain, try to get the domain + "./well-known/ai-plugin.json"
+      try {
+        const res: AxiosResponse<any> = await sendRequestWithRetry(async () => {
+          return await axios.get(path + manifestFilePath);
+        }, 3);
+
+        return res.data;
+      } catch (e) {
+        throw new UserError(
+          componentName,
+          "loadOpenAIPluginManifest",
+          getLocalizedString("error.copilotPlugin.openAiPluginManifest.CannotGetManifest", path),
+          getLocalizedString("error.copilotPlugin.openAiPluginManifest.CannotGetManifest", path)
+        );
+      }
     }
   }
 
