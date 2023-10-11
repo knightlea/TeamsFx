@@ -51,10 +51,14 @@ import { CliQuestionName, QuestionNames } from "./questionNames";
 import { isValidHttpUrl } from "./util";
 import {
   copilotPluginApiSpecOptionId,
+  copilotPluginApimOptionId,
   copilotPluginNewApiOptionId,
   copilotPluginOpenAIPluginOptionId,
 } from "./constants";
 import { Correlator } from "../common/correlator";
+import { ResourceManagementClient } from "@azure/arm-resources";
+import { resourceGroupHelper } from "../component/utils/ResourceGroupHelper";
+import { getApiSpecPath } from "../common/tools";
 
 export class ScratchOptions {
   static yes(): OptionItem {
@@ -418,6 +422,7 @@ export class CapabilityOptions {
       CapabilityOptions.copilotPluginNewApi(),
       CapabilityOptions.copilotPluginApiSpec(),
       CapabilityOptions.copilotPluginOpenAIPlugin(),
+      CapabilityOptions.copilotPluginApim(),
     ];
   }
 
@@ -520,6 +525,14 @@ export class CapabilityOptions {
       detail: getLocalizedString(
         "core.createProjectQuestion.capability.copilotPluginAIPluginOption.detail"
       ),
+    };
+  }
+
+  static copilotPluginApim(): OptionItem {
+    return {
+      id: copilotPluginApimOptionId,
+      label: "copilotPluginApim",
+      detail: "copilotPluginApim",
     };
   }
 
@@ -1581,6 +1594,58 @@ export function apiOperationQuestion(includeExistingAPIs = true): MultiSelectQue
   };
 }
 
+export function selectApimQuestion(): TextInputQuestion {
+  return {
+    type: "text",
+    name: QuestionNames.ApimResourceId,
+    cliShortName: "m",
+    title: "apim resource id",
+    additionalValidationOnAccept: {
+      validFunc: async (input: string, inputs?: Inputs): Promise<string | undefined> => {
+        if (!inputs) {
+          throw new Error("inputs is undefined"); // should never happen
+        }
+
+        const context = createContextV3();
+        inputs[QuestionNames.ApimResourceId] = input;
+        const apiSpecPath = await getApiSpecPath(context, inputs);
+        if (!apiSpecPath) {
+          return "empty path";
+        }
+        inputs[QuestionNames.ApiSpecLocation] = apiSpecPath;
+
+        const res = await listOperations(
+          context,
+          undefined,
+          inputs[QuestionNames.ApiSpecLocation],
+          undefined,
+          undefined,
+          false,
+          undefined
+        );
+        if (res.isOk()) {
+          inputs.supportedApisFromApiSpec = res.value;
+        } else {
+          const errors = res.error;
+          if (inputs.platform === Platform.CLI) {
+            return errors.map((e) => e.content).join("\n");
+          }
+          if (
+            errors.length === 1 &&
+            errors[0].content.length <= maximumLengthOfDetailsErrorMessageInInputBox
+          ) {
+            return errors[0].content;
+          } else {
+            return getLocalizedString(
+              "core.createProjectQuestion.apiSpec.multipleValidationErrors.vscode.message"
+            );
+          }
+        }
+      },
+    },
+  };
+}
+
 export function capabilitySubTree(): IQTreeNode {
   const node: IQTreeNode = {
     data: capabilityQuestion(),
@@ -1650,11 +1715,20 @@ export function capabilitySubTree(): IQTreeNode {
             inputs[QuestionNames.Capabilities] === CapabilityOptions.copilotPluginApiSpec().id ||
             inputs[QuestionNames.Capabilities] ===
               CapabilityOptions.copilotPluginOpenAIPlugin().id ||
+            inputs[QuestionNames.Capabilities] === CapabilityOptions.copilotPluginApim().id ||
             inputs[QuestionNames.MeArchitectureType] === MeArchitectureOptions.apiSpec().id
           );
         },
         data: { type: "group", name: QuestionNames.CopilotPluginExistingApi },
         children: [
+          {
+            condition: (inputs: Inputs) => {
+              return (
+                inputs[QuestionNames.Capabilities] === CapabilityOptions.copilotPluginApim().id
+              );
+            },
+            data: selectApimQuestion(),
+          },
           {
             condition: (inputs: Inputs) => {
               return (

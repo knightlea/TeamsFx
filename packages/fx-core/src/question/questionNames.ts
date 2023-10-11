@@ -36,6 +36,7 @@ export enum QuestionNames {
   OpenAIPluginManifest = "openai-plugin-manifest",
   ApiOperation = "api-operation",
   MeArchitectureType = "me-architecture",
+  ApimResourceId = "apim-resource-id",
 
   Features = "features",
   Env = "env",

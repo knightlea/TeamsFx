@@ -235,6 +235,11 @@
       ],
       "view/item/context": [
         {
+          "command": "fx-extension.scaffoldCopilotPlugin",
+          "when": "view == azureApiManagementExplorer && viewItem == azureApiManagementApi",
+          "group": "1@1"
+        },
+        {
           "command": "fx-extension.signOut",
           "when": "view == teamsfx-accounts && viewItem == signedinM365",
           "group": "inline@1"
@@ -479,6 +484,11 @@
       ]
     },
     "commands": [
+      {
+        "command": "fx-extension.scaffoldCopilotPlugin",
+        "title": "Scaffold Copilot Plugin",
+        "category": "Azure API Management"
+      },
       {
         "command": "fx-extension.create",
         "title": "%teamstoolkit.commands.createProject.title%",

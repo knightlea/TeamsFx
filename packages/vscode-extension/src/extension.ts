@@ -114,6 +114,7 @@ function activateTeamsFxRegistration(context: vscode.ExtensionContext) {
   registerTreeViewCommandsInHelper(context);
   registerTeamsFxCommands(context);
   registerMenuCommands(context);
+  registerCopilotPluginCommands(context);
   handlers.registerAccountMenuCommands(context);
 
   TreeViewManagerInstance.registerTreeViews(context);
@@ -644,6 +645,14 @@ function registerMenuCommands(context: vscode.ExtensionContext) {
     Correlator.run(handlers.selectAndDebugHandler, args)
   );
   context.subscriptions.push(runIconCmd);
+}
+
+function registerCopilotPluginCommands(context: vscode.ExtensionContext) {
+  const scaffoldFromAPIM = vscode.commands.registerCommand(
+    "fx-extension.scaffoldCopilotPlugin",
+    async (...args) => Correlator.run(handlers.createCopilotPluginHandler, args)
+  );
+  context.subscriptions.push(scaffoldFromAPIM);
 }
 
 async function initializeContextKey(context: vscode.ExtensionContext, isTeamsFxProject: boolean) {

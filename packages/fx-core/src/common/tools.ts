@@ -4,7 +4,9 @@ import { Tunnel } from "@microsoft/dev-tunnels-contracts";
 import { TunnelManagementHttpClient } from "@microsoft/dev-tunnels-management";
 import {
   AzureAccountProvider,
+  Context,
   FxError,
+  Inputs,
   M365TokenProvider,
   OptionItem,
   Result,
@@ -34,6 +36,7 @@ import { FeatureFlagName, OfficeClientId, OutlookClientId, TeamsClientId } from 
 import { isFeatureFlagEnabled } from "./featureFlags";
 import { getDefaultString, getLocalizedString } from "./localizeUtils";
 import { PackageService } from "./m365/packageService";
+import { QuestionNames } from "../question";
 
 Handlebars.registerHelper("contains", (value, array) => {
   array = array instanceof Array ? array : [array];
@@ -336,4 +339,36 @@ export async function listDevTunnels(token: string): Promise<Result<Tunnel[], Fx
   } catch (error) {
     return err(new SystemError("DevTunnels", "ListDevTunnelsFailed", error.message));
   }
+}
+
+export async function getApiSpecPath(context: Context, inputs: Inputs): Promise<string> {
+  if (!inputs[QuestionNames.ApimResourceId]) {
+    throw new Error("");
+  }
+
+  const credential = await context.tokenProvider?.azureAccountProvider.getIdentityCredentialAsync(
+    true
+  );
+  if (!credential) {
+    throw new Error("");
+  }
+  const accessToken = await credential.getToken("https://management.azure.com/.default");
+  const token = accessToken?.token;
+
+  const res = await axios.get(
+    `https://management.azure.com${
+      inputs[QuestionNames.ApimResourceId] as string
+    }?format=openapi-link&export=true&api-version=2023-03-01-preview`,
+    {
+      headers: {
+        Authorization: `Bearer ${token!}`,
+      },
+    }
+  );
+
+  if (res.status !== 200) {
+    throw new Error("");
+  }
+
+  return res.data.properties.value.link;
 }

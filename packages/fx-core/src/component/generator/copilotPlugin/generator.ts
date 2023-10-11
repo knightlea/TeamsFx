@@ -46,6 +46,7 @@ import { ConstantString } from "../../../common/spec-parser/constants";
 import * as util from "util";
 import { SpecParserError } from "../../../common/spec-parser/specParserError";
 import { isValidHttpUrl } from "../../../question/util";
+import { getApiSpecPath } from "../../../common/tools";
 
 const fromApiSpeccomponentName = "copilot-plugin-existing-api";
 const fromApiSpecTemplateName = "copilot-plugin-existing-api";

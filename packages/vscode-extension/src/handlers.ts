@@ -372,6 +372,23 @@ export async function createNewProjectHandler(args?: any[]): Promise<Result<any,
   return result;
 }
 
+export async function createCopilotPluginHandler(args?: any[]): Promise<Result<any, FxError>> {
+  const inputs = getSystemInputs();
+  inputs.capabilities = "copilot-plugin-apim";
+  inputs[commonTools.QuestionNames.ProjectType] = "copilot-plugin-type";
+  inputs["apim-resource-id"] = args![0].apiContract!.id;
+  const result = await runCommand(Stage.create, inputs);
+  if (result.isErr()) {
+    return err(result.error);
+  }
+
+  const res = result.value as CreateProjectResult;
+  const projectPathUri = Uri.file(res.projectPath);
+  // show local debug button by default
+  await openFolder(projectPathUri, true, res.warnings, args);
+  return result;
+}
+
 export async function openFolder(
   folderPath: Uri,
   showLocalDebugMessage: boolean,
