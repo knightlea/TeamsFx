@@ -7,7 +7,7 @@
 "use strict";
 
 import { TokenCacheContext } from "@azure/msal-node";
-import { ConfigFolderName } from "@microsoft/teamsfx-api";
+import { ConfigFolderName, FxError } from "@microsoft/teamsfx-api";
 import * as crypto from "crypto";
 import * as fs from "fs-extra";
 import VsCodeLogInstance from "./log";
@@ -150,7 +150,7 @@ export class CryptoCachePlugin {
         }
       } catch (err) {
         VsCodeLogInstance.warning(
-          localize("teamstoolkit.cacheAccess.readTokenFail") + (err.message as string)
+          localize("teamstoolkit.cacheAccess.readTokenFail") + (err as FxError).message
         );
       }
     } else {
@@ -160,7 +160,7 @@ export class CryptoCachePlugin {
         await fs.writeFile(fileCachePath, text, UTF8);
       } catch (err) {
         VsCodeLogInstance.warning(
-          localize("teamstoolkit.cacheAccess.writeTokenFail") + (err.message as string)
+          localize("teamstoolkit.cacheAccess.writeTokenFail") + (err as FxError).message
         );
       }
     }
@@ -176,7 +176,7 @@ export class CryptoCachePlugin {
         await fs.writeFile(fileCachePath, text, UTF8);
       } catch (err) {
         VsCodeLogInstance.warning(
-          localize("teamstoolkit.cacheAccess.saveTokenFail") + (err.message as string)
+          localize("teamstoolkit.cacheAccess.saveTokenFail") + (err as FxError).message
         );
       }
     }
@@ -198,7 +198,7 @@ export async function saveAccountId(accountName: string, accountId?: string) {
     }
   } catch (err) {
     VsCodeLogInstance.warning(
-      localize("teamstoolkit.cacheAccess.saveHomeAccountIdFail") + (err.message as string)
+      localize("teamstoolkit.cacheAccess.saveHomeAccountIdFail") + (err as FxError).message
     );
   }
 }
@@ -209,7 +209,7 @@ export async function clearCache(accountName: string) {
     await fs.writeFile(cachePath + accountName + cachePathEnd, "");
   } catch (err) {
     VsCodeLogInstance.warning(
-      localize("teamstoolkit.cacheAccess.writeTokenFail") + (err.message as string)
+      localize("teamstoolkit.cacheAccess.writeTokenFail") + (err as FxError).message
     );
   }
 }
@@ -220,7 +220,7 @@ export async function loadAccountId(accountName: string) {
       return await fs.readFile(accountPath + accountName, UTF8);
     } catch (err) {
       VsCodeLogInstance.warning(
-        localize("teamstoolkit.cacheAccess.readHomeAccountIdFail") + (err.message as string)
+        localize("teamstoolkit.cacheAccess.readHomeAccountIdFail") + (err as FxError).message
       );
     }
   }

@@ -66,6 +66,8 @@ import { loadLocalizedStrings } from "./utils/localizeUtils";
 import { ExtensionSurvey } from "./utils/survey";
 import { ExtensionUpgrade } from "./utils/upgrade";
 import { PrereleasePage } from "./utils/prerelease";
+import { samples } from "./ai/samples";
+import { writeProjectFilesToDisk } from "./ai/fileHelper";
 
 export let VS_CODE_UI: VsCodeUI;
 
@@ -90,6 +92,36 @@ export async function activate(context: vscode.ExtensionContext) {
   if (isTeamsFxProject) {
     activateTeamsFxRegistration(context);
   }
+
+  const createTeamsAppSlashCmd = vscode.chat.registerSlashCommand(
+    "createTeamsApp",
+    sampleMatchSlashCommand,
+    sampleMatchSlashCommandMetaData
+  );
+  context.subscriptions.push(createTeamsAppSlashCmd);
+  const createProjectCmd = vscode.commands.registerCommand(
+    sampleMatchSlashCommandId,
+    async (tree, sample) => {
+      const selection = await vscode.window.showOpenDialog({
+        openLabel: "Choose where to save your project",
+        canSelectFiles: false,
+        canSelectFolders: true,
+        canSelectMany: false,
+      });
+
+      if (!selection) {
+        return;
+      }
+
+      const parentDirectory = selection[0];
+      await writeProjectFilesToDisk(parentDirectory, tree.children ?? [], sample);
+      void vscode.commands.executeCommand(
+        "vscode.openFolder",
+        vscode.Uri.joinPath(parentDirectory, tree.uri.path)
+      );
+    }
+  );
+  context.subscriptions.push(createProjectCmd);
 
   // Call activate function of toolkit core.
   handlers.activate();
@@ -165,6 +197,17 @@ function activateTeamsFxRegistration(context: vscode.ExtensionContext) {
     vscode.workspace.onWillSaveTextDocument(handlers.saveTextDocumentHandler)
   );
 }
+
+const sampleMatchSlashCommandId = "teamsfx.slashCommand";
+const sampleMatchSlashCommandMetaData = { description: "Create a Teams App from a sample" };
+const sampleMatchSlashCommand: vscode.SlashCommand = async (prompt, context, progress, token) => {
+  const [tree, sample] = await handlers.teamsAi.matchSamples(prompt.content, samples, progress);
+  return {
+    followUp: [
+      { title: "Create Project", commandId: sampleMatchSlashCommandId, args: [tree, sample] },
+    ],
+  };
+};
 
 /**
  * Commands that always show in command palette. They will activate extension and wait for its completion.

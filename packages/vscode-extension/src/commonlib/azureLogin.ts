@@ -13,6 +13,7 @@ import {
   SingleSelectConfig,
   OptionItem,
   SystemError,
+  FxError,
 } from "@microsoft/teamsfx-api";
 import { ExtensionErrors } from "../error";
 import { AzureAccountExtensionApi as AzureAccount } from "./azure-account.api";
@@ -288,14 +289,15 @@ export class AzureAccountManager extends login implements AzureAccountProvider {
         resolve(true);
       });
     } catch (e) {
-      VsCodeLogInstance.error("[Logout Azure] " + (e.message as string));
-      ExtTelemetry.sendTelemetryErrorEvent(TelemetryEvent.SignOut, e, {
+      const err = e as FxError;
+      VsCodeLogInstance.error("[Logout Azure] " + err.message);
+      ExtTelemetry.sendTelemetryErrorEvent(TelemetryEvent.SignOut, err, {
         [TelemetryProperty.AccountType]: AccountType.Azure,
         [TelemetryProperty.Success]: TelemetrySuccess.No,
         [TelemetryProperty.ErrorType]:
           e instanceof UserError ? TelemetryErrorType.UserError : TelemetryErrorType.SystemError,
-        [TelemetryProperty.ErrorCode]: `${e.source as string}.${e.name as string}`,
-        [TelemetryProperty.ErrorMessage]: `${e.message as string}`,
+        [TelemetryProperty.ErrorCode]: `${err.source}.${err.name}`,
+        [TelemetryProperty.ErrorMessage]: `${err.message}`,
       });
       return Promise.resolve(false);
     }
@@ -524,7 +526,7 @@ export class AzureAccountManager extends login implements AzureAccountProvider {
       const versionDetail = version.split(".");
       return parseInt(versionDetail[0]) === 0 && parseInt(versionDetail[1]) < 10;
     } catch (e) {
-      VsCodeLogInstance.error("[Get Azure extension] " + (e.message as string));
+      VsCodeLogInstance.error("[Get Azure extension] " + (e as FxError).message);
       return false;
     }
   }

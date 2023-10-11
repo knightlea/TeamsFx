@@ -56,3 +56,7 @@ export function isCliNewUxEnabled(): boolean {
 export function isTestToolEnabled(): boolean {
   return isFeatureFlagEnabled(FeatureFlagName.TestTool, false);
 }
+
+export function isAiAssistantPreviewEnabled(): boolean {
+  return isFeatureFlagEnabled(FeatureFlagName.AiAssistantPreview, false);
+}

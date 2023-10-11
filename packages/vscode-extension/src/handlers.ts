@@ -69,6 +69,7 @@ import {
   globalStateGet,
   globalStateUpdate,
   isImportSPFxEnabled,
+  isAiAssistantPreviewEnabled,
   isUserCancelError,
   isValidProject,
   pathUtils,
@@ -133,9 +134,12 @@ import {
 import { getDefaultString, localize, parseLocale } from "./utils/localizeUtils";
 import { ExtensionSurvey } from "./utils/survey";
 import { MetadataV3 } from "@microsoft/teamsfx-core";
+import { TeamsDevAI } from "./ai/TeamsDevAi";
+import { sampleMatchHandler } from "./ai/commandHandler";
 
 export let core: FxCore;
 export let tools: Tools;
+export let teamsAi: TeamsDevAI;
 
 export function activate(): Result<Void, FxError> {
   const result: Result<Void, FxError> = ok(Void);
@@ -205,6 +209,17 @@ export function activate(): Result<Void, FxError> {
     const workspacePath = globalVariables.workspaceUri?.fsPath;
     if (workspacePath) {
       addFileSystemWatcher(workspacePath);
+    }
+
+    if (isAiAssistantPreviewEnabled()) {
+      const apiKey = process.env.OPEN_API_KEY ?? "";
+      teamsAi = new TeamsDevAI(
+        apiKey,
+        "azure-openai-zihch",
+        "gpt-35-turbo-16k-zihch",
+        "2023-08-01-preview",
+        sampleMatchHandler
+      );
     }
 
     if (workspacePath) {
@@ -365,10 +380,13 @@ export async function createNewProjectHandler(args?: any[]): Promise<Result<any,
     return err(result.error);
   }
 
-  const res = result.value as CreateProjectResult;
-  const projectPathUri = Uri.file(res.projectPath);
-  // show local debug button by default
-  await openFolder(projectPathUri, true, res.warnings, args);
+  if (result.value != undefined) {
+    const res = result.value as CreateProjectResult;
+    const projectPathUri = Uri.file(res.projectPath);
+    // show local debug button by default
+    await openFolder(projectPathUri, true, res.warnings, args);
+  }
+
   return result;
 }
 
@@ -702,6 +720,13 @@ export async function runCommand(
         const tmpResult = await core.createProject(inputs);
         if (tmpResult.isErr()) {
           result = err(tmpResult.error);
+        } else if (tmpResult.value === "AiAssistant") {
+          console.log("AiAssistant");
+          await vscode.commands.executeCommand(
+            "workbench.panel.chat.view.copilot.focus",
+            "/createTeamsApp"
+          );
+          result = ok(undefined);
         } else {
           result = ok(tmpResult.value);
         }
@@ -1582,7 +1607,7 @@ export async function grantPermission(env?: string): Promise<Result<any, FxError
     window.showInformationMessage(grantSucceededMsg);
     VsCodeLogInstance.info(grantSucceededMsg);
   } catch (e) {
-    result = wrapError(e);
+    result = wrapError(e as Error);
   }
 
   await processResult(TelemetryEvent.GrantPermission, result, inputs);
@@ -1611,7 +1636,7 @@ export async function listCollaborator(env?: string): Promise<Result<any, FxErro
     // TODO: For short-term workaround. Remove after webview is ready.
     VsCodeLogInstance.outputChannel.show();
   } catch (e) {
-    result = wrapError(e);
+    result = wrapError(e as Error);
   }
 
   await processResult(TelemetryEvent.ListCollaborator, result, inputs);
@@ -1657,7 +1682,7 @@ export async function manageCollaboratorHandler(env?: string): Promise<Result<an
         break;
     }
   } catch (e) {
-    result = wrapError(e);
+    result = wrapError(e as Error);
   }
 
   ExtTelemetry.sendTelemetryEvent(TelemetryEvent.ManageCollaborator);

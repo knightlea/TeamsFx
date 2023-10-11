@@ -88,7 +88,7 @@ import { settingsUtil } from "../component/utils/settingsUtil";
 import { assembleError, FileNotFoundError, InvalidProjectError } from "../error/common";
 import { NoNeedUpgradeError } from "../error/upgrade";
 import { YamlFieldMissingError } from "../error/yml";
-import { ValidateTeamsAppInputs } from "../question";
+import { ProjectTypeOptions, ValidateTeamsAppInputs } from "../question";
 import { createProjectCliHelpNode, ScratchOptions, SPFxVersionOptionIds } from "../question/create";
 import { HubTypes, isAadMainifestContainsPlaceholder } from "../question/other";
 import { QuestionNames } from "../question/questionNames";
@@ -131,7 +131,13 @@ export class FxCore {
     ErrorHandlerMW,
     QuestionMW("createProject"),
   ])
-  async createProject(inputs: Inputs): Promise<Result<CreateProjectResult, FxError>> {
+  async createProject(
+    inputs: Inputs
+  ): Promise<Result<CreateProjectResult | "AiAssistant", FxError>> {
+    if (inputs[QuestionNames.ProjectType] === ProjectTypeOptions.aiAssistant().id) {
+      return ok("AiAssistant");
+    }
+
     const context = createContextV3();
     inputs[QuestionNames.Scratch] = ScratchOptions.yes().id;
     if (inputs.teamsAppFromTdp) {

@@ -60,4 +60,5 @@ export class FeatureFlagName {
   static readonly ApiCopilotPlugin = "API_COPILOT_PLUGIN";
   static readonly SampleConfigBranch = "TEAMSFX_SAMPLE_CONFIG_BRANCH";
   static readonly TestTool = "TEAMSFX_TEST_TOOL";
+  static readonly AiAssistantPreview = "TEAMSFX_AI_ASSISTANT_PREVIEW";
 }

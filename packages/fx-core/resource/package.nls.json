@@ -264,6 +264,8 @@
   "core.createProjectQuestion.option.description.worksInOutlook": "Works in Teams and Outlook",
   "core.createProjectQuestion.option.description.worksInOutlookM365": "Works in Teams, Outlook and the Microsoft 365 app",
   "core.createProjectQuestion.option.description.worksInOutlookCopilot": "Works in Teams, Outlook and Copilot",
+  "core.createProjectQuestion.projectType.aiAssistant.detail": "No idea? Chat with GitHub Copilot to get a template",
+  "core.createProjectQuestion.projectType.aiAssistant.label": "Chat with GitHub Copilot to get started",
   "core.createProjectQuestion.projectType.bot.detail": "Conversational or informative chat experiences that can automate repetitive tasks",
   "core.createProjectQuestion.projectType.bot.label": "Bot",
   "core.createProjectQuestion.projectType.bot.title": "App Features Using a Bot",

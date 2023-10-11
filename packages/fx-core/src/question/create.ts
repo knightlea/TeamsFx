@@ -25,6 +25,7 @@ import {
   isCLIDotNetEnabled,
   isCopilotPluginEnabled,
   isApiCopilotPluginEnabled,
+  isAiAssistantPreviewEnabled,
 } from "../common/featureFlags";
 import { getLocalizedString } from "../common/localizeUtils";
 import { sampleProvider } from "../common/samples";
@@ -77,6 +78,15 @@ export class ScratchOptions {
 }
 
 export class ProjectTypeOptions {
+  static aiAssistant(platform?: Platform): OptionItem {
+    return {
+      id: "ai-assistant",
+      label: `${platform === Platform.VSCode ? "$(sparkle) " : ""}${getLocalizedString(
+        "core.createProjectQuestion.projectType.aiAssistant.label"
+      )}`,
+      detail: getLocalizedString("core.createProjectQuestion.projectType.aiAssistant.detail"),
+    };
+  }
   static tab(platform?: Platform): OptionItem {
     return {
       id: "tab-type",
@@ -152,6 +162,7 @@ function projectTypeQuestion(): SingleSelectQuestion {
         ];
       } else {
         staticOptions = [
+          ProjectTypeOptions.aiAssistant(inputs.platform),
           ProjectTypeOptions.bot(inputs.platform),
           ProjectTypeOptions.tab(inputs.platform),
           ProjectTypeOptions.me(inputs.platform),
@@ -1514,6 +1525,9 @@ export function apiOperationQuestion(includeExistingAPIs = true): MultiSelectQue
 export function capabilitySubTree(): IQTreeNode {
   const node: IQTreeNode = {
     data: capabilityQuestion(),
+    condition: (input: Inputs) => {
+      return input[QuestionNames.ProjectType] != ProjectTypeOptions.aiAssistant().id;
+    },
     children: [
       {
         // Notification bot trigger sub-tree
