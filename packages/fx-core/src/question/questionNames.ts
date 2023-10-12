@@ -37,6 +37,8 @@ export enum QuestionNames {
   ApiOperation = "api-operation",
   MeArchitectureType = "me-architecture",
   ApimResourceId = "apim-resource-id",
+  ApimService = "apim-service",
+  Subscription = "subscription",
 
   Features = "features",
   Env = "env",

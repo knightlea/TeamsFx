@@ -59,6 +59,8 @@ import { Correlator } from "../common/correlator";
 import { ResourceManagementClient } from "@azure/arm-resources";
 import { resourceGroupHelper } from "../component/utils/ResourceGroupHelper";
 import { getApiSpecPath } from "../common/tools";
+import { provisionUtils } from "../component/provisionUtils";
+import axios from "axios";
 
 export class ScratchOptions {
   static yes(): OptionItem {
@@ -531,8 +533,8 @@ export class CapabilityOptions {
   static copilotPluginApim(): OptionItem {
     return {
       id: copilotPluginApimOptionId,
-      label: "copilotPluginApim",
-      detail: "copilotPluginApim",
+      label: "APIM",
+      detail: "APIM",
     };
   }
 
@@ -1594,7 +1596,160 @@ export function apiOperationQuestion(includeExistingAPIs = true): MultiSelectQue
   };
 }
 
-export function selectApimQuestion(): TextInputQuestion {
+export function selectSubscription(): SingleSelectQuestion {
+  return {
+    type: "singleSelect",
+    name: QuestionNames.Subscription,
+    cliShortName: "s",
+    title: "subscription",
+    staticOptions: [],
+    dynamicOptions: async (inputs: Inputs) => {
+      const context = createContextV3();
+      const credential =
+        await context.tokenProvider?.azureAccountProvider.getIdentityCredentialAsync(true);
+      if (!credential) {
+        throw new Error("");
+      }
+      const accessToken = await credential.getToken("https://management.azure.com/.default");
+      const token = accessToken?.token;
+
+      const res = await axios.get(
+        `https://management.azure.com/subscriptions?api-version=2022-12-01`,
+        {
+          headers: {
+            Authorization: `Bearer ${token!}`,
+          },
+        }
+      );
+
+      const results = res.data.value.map((item: any) => ({
+        id: item.subscriptionId,
+        label: item.displayName,
+        description: item.displayName,
+      }));
+      return results;
+    },
+  };
+}
+
+export function selectApimQuestion(): SingleSelectQuestion {
+  return {
+    type: "singleSelect",
+    name: QuestionNames.ApimService,
+    cliShortName: "se",
+    title: "apim service",
+    staticOptions: [],
+    dynamicOptions: async (inputs: Inputs) => {
+      const context = createContextV3();
+      const subscriptionId = inputs[QuestionNames.Subscription];
+      const credential =
+        await context.tokenProvider?.azureAccountProvider.getIdentityCredentialAsync(true);
+      if (!credential) {
+        throw new Error("");
+      }
+      const accessToken = await credential.getToken("https://management.azure.com/.default");
+      const token = accessToken!.token;
+      const res = await axios.get(
+        `https://management.azure.com/subscriptions/${
+          subscriptionId as string
+        }/resources/?$filter=resourceType eq 'Microsoft.ApiManagement/service'&api-version=2021-04-01`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const results = res.data.value.map((item: any) => ({
+        id: item.id,
+        label: item.name,
+        description: item.name,
+      }));
+      return results;
+    },
+  };
+}
+
+export function selectApimApiQuestion(): SingleSelectQuestion {
+  return {
+    type: "singleSelect",
+    name: QuestionNames.ApimResourceId,
+    cliShortName: "a",
+    title: "apim resource id",
+    staticOptions: [],
+    dynamicOptions: async (inputs: Inputs) => {
+      const context = createContextV3();
+      const credential =
+        await context.tokenProvider?.azureAccountProvider.getIdentityCredentialAsync(true);
+      if (!credential) {
+        throw new Error("");
+      }
+      const accessToken = await credential.getToken("https://management.azure.com/.default");
+      const token = accessToken?.token;
+
+      const res = await axios.get(
+        `https://management.azure.com${
+          inputs[QuestionNames.ApimService] as string
+        }/apis?api-version=2023-03-01-preview`,
+        {
+          headers: {
+            Authorization: `Bearer ${token!}`,
+          },
+        }
+      );
+      const results = res.data.value.map((item: any) => ({
+        id: item.id,
+        label: item.name,
+        description: item.name,
+      }));
+      return results;
+    },
+    validation: {
+      validFunc: async (input: string, inputs?: Inputs): Promise<string | undefined> => {
+        if (!inputs) {
+          throw new Error("inputs is undefined"); // should never happen
+        }
+
+        const context = createContextV3();
+        inputs[QuestionNames.ApimResourceId] = input;
+        const apiSpecPath = await getApiSpecPath(context, inputs);
+        if (!apiSpecPath) {
+          return "empty path";
+        }
+        inputs[QuestionNames.ApiSpecLocation] = apiSpecPath;
+
+        const res = await listOperations(
+          context,
+          undefined,
+          inputs[QuestionNames.ApiSpecLocation],
+          undefined,
+          undefined,
+          false,
+          undefined
+        );
+        if (res.isOk()) {
+          inputs.supportedApisFromApiSpec = res.value;
+        } else {
+          const errors = res.error;
+          if (inputs.platform === Platform.CLI) {
+            return errors.map((e) => e.content).join("\n");
+          }
+          if (
+            errors.length === 1 &&
+            errors[0].content.length <= maximumLengthOfDetailsErrorMessageInInputBox
+          ) {
+            return errors[0].content;
+          } else {
+            return getLocalizedString(
+              "core.createProjectQuestion.apiSpec.multipleValidationErrors.vscode.message"
+            );
+          }
+        }
+      },
+    },
+  };
+}
+
+export function selectApimForExtensionQuestion(): TextInputQuestion {
   return {
     type: "text",
     name: QuestionNames.ApimResourceId,
@@ -1724,14 +1879,6 @@ export function capabilitySubTree(): IQTreeNode {
           {
             condition: (inputs: Inputs) => {
               return (
-                inputs[QuestionNames.Capabilities] === CapabilityOptions.copilotPluginApim().id
-              );
-            },
-            data: selectApimQuestion(),
-          },
-          {
-            condition: (inputs: Inputs) => {
-              return (
                 inputs[QuestionNames.Capabilities] ===
                   CapabilityOptions.copilotPluginApiSpec().id ||
                 inputs[QuestionNames.MeArchitectureType] === MeArchitectureOptions.apiSpec().id
@@ -1742,6 +1889,41 @@ export function capabilitySubTree(): IQTreeNode {
           {
             condition: { equals: CapabilityOptions.copilotPluginOpenAIPlugin().id },
             data: openAIPluginManifestLocationQuestion(),
+          },
+          {
+            condition: (inputs: Inputs) => {
+              return (
+                inputs[QuestionNames.Capabilities] === CapabilityOptions.copilotPluginApim().id &&
+                !inputs[QuestionNames.ApimResourceId]
+              );
+            },
+            data: selectSubscription(),
+          },
+          {
+            condition: (inputs: Inputs) => {
+              return (
+                inputs[QuestionNames.Capabilities] === CapabilityOptions.copilotPluginApim().id &&
+                !inputs[QuestionNames.ApimResourceId]
+              );
+            },
+            data: selectApimQuestion(),
+          },
+          {
+            condition: (inputs: Inputs) => {
+              return (
+                inputs[QuestionNames.Capabilities] === CapabilityOptions.copilotPluginApim().id &&
+                !inputs[QuestionNames.ApimResourceId]
+              );
+            },
+            data: selectApimApiQuestion(),
+          },
+          {
+            condition: (inputs: Inputs) => {
+              return (
+                inputs[QuestionNames.Capabilities] === CapabilityOptions.copilotPluginApim().id
+              );
+            },
+            data: selectApimForExtensionQuestion(),
           },
           {
             data: apiOperationQuestion(),

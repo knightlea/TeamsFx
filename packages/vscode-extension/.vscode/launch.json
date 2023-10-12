@@ -16,7 +16,10 @@
         "${workspaceFolder}/../api/build/**/*.js"
       ],
       "env": {
-        "NODE_ENV": "development"
+        "NODE_ENV": "development",
+        "API_COPILOT_PLUGIN": "true",
+        "COPILOT_PLUGIN": "true",
+        "TEAMSFX_DEBUG_TEMPLATE": "true"
       },
       "preLaunchTask": "npm: build"
     },
