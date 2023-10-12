@@ -374,8 +374,9 @@ export async function createNewProjectHandler(args?: any[]): Promise<Result<any,
 
 export async function createCopilotPluginHandler(args?: any[]): Promise<Result<any, FxError>> {
   const inputs = getSystemInputs();
-  inputs.capabilities = "copilot-plugin-apim";
-  inputs[commonTools.QuestionNames.ProjectType] = "copilot-plugin-type";
+  inputs.capabilities = "search-app";
+  inputs[commonTools.QuestionNames.ProjectType] = "me-type";
+  inputs["me-architecture"] = "copilot-plugin-apim";
   inputs["apim-resource-id"] = args![0].apiContract!.id;
   const result = await runCommand(Stage.create, inputs);
   if (result.isErr()) {

@@ -424,7 +424,6 @@ export class CapabilityOptions {
       CapabilityOptions.copilotPluginNewApi(),
       CapabilityOptions.copilotPluginApiSpec(),
       CapabilityOptions.copilotPluginOpenAIPlugin(),
-      CapabilityOptions.copilotPluginApim(),
     ];
   }
 
@@ -679,6 +678,7 @@ export class MeArchitectureOptions {
       MeArchitectureOptions.newApi(),
       MeArchitectureOptions.apiSpec(),
       isCopilotPluginEnabled() ? MeArchitectureOptions.botPlugin() : MeArchitectureOptions.botMe(),
+      CapabilityOptions.copilotPluginApim(),
     ];
   }
 
@@ -688,6 +688,7 @@ export class MeArchitectureOptions {
       MeArchitectureOptions.apiSpec(),
       MeArchitectureOptions.botPlugin(),
       MeArchitectureOptions.botMe(),
+      CapabilityOptions.copilotPluginApim(),
     ];
   }
 }
@@ -1870,7 +1871,7 @@ export function capabilitySubTree(): IQTreeNode {
             inputs[QuestionNames.Capabilities] === CapabilityOptions.copilotPluginApiSpec().id ||
             inputs[QuestionNames.Capabilities] ===
               CapabilityOptions.copilotPluginOpenAIPlugin().id ||
-            inputs[QuestionNames.Capabilities] === CapabilityOptions.copilotPluginApim().id ||
+            inputs[QuestionNames.MeArchitectureType] === CapabilityOptions.copilotPluginApim().id ||
             inputs[QuestionNames.MeArchitectureType] === MeArchitectureOptions.apiSpec().id
           );
         },
@@ -1893,8 +1894,8 @@ export function capabilitySubTree(): IQTreeNode {
           {
             condition: (inputs: Inputs) => {
               return (
-                inputs[QuestionNames.Capabilities] === CapabilityOptions.copilotPluginApim().id &&
-                !inputs[QuestionNames.ApimResourceId]
+                inputs[QuestionNames.MeArchitectureType] ===
+                  CapabilityOptions.copilotPluginApim().id && !inputs[QuestionNames.ApimResourceId]
               );
             },
             data: selectSubscription(),
@@ -1902,8 +1903,8 @@ export function capabilitySubTree(): IQTreeNode {
           {
             condition: (inputs: Inputs) => {
               return (
-                inputs[QuestionNames.Capabilities] === CapabilityOptions.copilotPluginApim().id &&
-                !inputs[QuestionNames.ApimResourceId]
+                inputs[QuestionNames.MeArchitectureType] ===
+                  CapabilityOptions.copilotPluginApim().id && !inputs[QuestionNames.ApimResourceId]
               );
             },
             data: selectApimQuestion(),
@@ -1911,8 +1912,8 @@ export function capabilitySubTree(): IQTreeNode {
           {
             condition: (inputs: Inputs) => {
               return (
-                inputs[QuestionNames.Capabilities] === CapabilityOptions.copilotPluginApim().id &&
-                !inputs[QuestionNames.ApimResourceId]
+                inputs[QuestionNames.MeArchitectureType] ===
+                  CapabilityOptions.copilotPluginApim().id && !inputs[QuestionNames.ApimResourceId]
               );
             },
             data: selectApimApiQuestion(),
@@ -1920,7 +1921,8 @@ export function capabilitySubTree(): IQTreeNode {
           {
             condition: (inputs: Inputs) => {
               return (
-                inputs[QuestionNames.Capabilities] === CapabilityOptions.copilotPluginApim().id
+                inputs[QuestionNames.MeArchitectureType] ===
+                CapabilityOptions.copilotPluginApim().id
               );
             },
             data: selectApimForExtensionQuestion(),

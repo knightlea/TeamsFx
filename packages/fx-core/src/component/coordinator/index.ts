@@ -232,7 +232,7 @@ class Coordinator {
       } else if (
         capability === CapabilityOptions.copilotPluginApiSpec().id ||
         meArchitecture === MeArchitectureOptions.apiSpec().id ||
-        capability === CapabilityOptions.copilotPluginApim().id
+        meArchitecture === CapabilityOptions.copilotPluginApim().id
       ) {
         const res = await CopilotPluginGenerator.generateFromApiSpec(context, inputs, projectPath);
         if (res.isErr()) {

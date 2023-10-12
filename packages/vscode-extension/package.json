@@ -52,6 +52,7 @@
     "onCommand:fx-extension.selectTutorials",
     "onCommand:fx-extension.signinM365",
     "onCommand:fx-extension.validate-getStarted-prerequisites",
+    "onCommand:fx-extension.scaffoldCopilotPlugin",
     "onCommand:workbench.action.tasks.runTask",
     "onCommand:workbench.action.debug.start",
     "workspaceContains:/.fx/**/*",
@@ -487,7 +488,7 @@
       {
         "command": "fx-extension.scaffoldCopilotPlugin",
         "title": "Scaffold Copilot Plugin",
-        "category": "Azure API Management"
+        "category": "Teams"
       },
       {
         "command": "fx-extension.create",

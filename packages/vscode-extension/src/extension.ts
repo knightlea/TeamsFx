@@ -114,7 +114,6 @@ function activateTeamsFxRegistration(context: vscode.ExtensionContext) {
   registerTreeViewCommandsInHelper(context);
   registerTeamsFxCommands(context);
   registerMenuCommands(context);
-  registerCopilotPluginCommands(context);
   handlers.registerAccountMenuCommands(context);
 
   TreeViewManagerInstance.registerTreeViews(context);
@@ -256,6 +255,8 @@ function registerActivateCommands(context: vscode.ExtensionContext) {
     () => Correlator.run(handlers.migrateTeamsTabAppHandler)
   );
   context.subscriptions.push(migrateTeamsTabAppCmd);
+
+  registerCopilotPluginCommands(context);
 }
 
 /**
