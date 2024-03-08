@@ -35,7 +35,7 @@ import {
   renderTemplateFileData,
   renderTemplateFileName,
 } from "./utils";
-import { enableTestToolByDefault } from "../../common/featureFlags";
+import { enableTestToolByDefault, isNewProjectTypeEnabled } from "../../common/featureFlags";
 import { Utils } from "@microsoft/m365-spec-parser";
 
 export class Generator {
@@ -72,6 +72,7 @@ export class Generator {
       openAIKey: llmServiceData?.openAIKey ?? "",
       azureOpenAIKey: llmServiceData?.azureOpenAIKey ?? "",
       azureOpenAIEndpoint: llmServiceData?.azureOpenAIEndpoint ?? "",
+      isNewProjectTypeEnabled: isNewProjectTypeEnabled() ? "true" : "",
     };
   }
   @hooks([

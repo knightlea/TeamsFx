@@ -67,3 +67,7 @@ export function isTeamsFxRebrandingEnabled(): boolean {
 export function isTdpTemplateCliTestEnabled(): boolean {
   return isFeatureFlagEnabled(FeatureFlagName.TdpTemplateCliTest, false);
 }
+
+export function isNewProjectTypeEnabled(): boolean {
+  return isFeatureFlagEnabled(FeatureFlagName.NewProjectType, true);
+}
