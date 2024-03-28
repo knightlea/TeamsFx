@@ -188,8 +188,8 @@ jobs:
         uses: jossef/action-set-json-field@v2.1
         with:
           file: ./packages/vscode-extension/package.json
-          field: contributes.chatParticipants
-          value: '[]'
+          field: contributes
+          value: '{ \"chatParticipants\": [] }'
           parse_json: true
 
       - name: disable chat participant environment variable
