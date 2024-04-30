@@ -36,12 +36,12 @@ export type LocalDebugTestName =
 
 export class LocalDebugTestContext extends TestContext {
   public testName: LocalDebugTestName;
-  public lang: "javascript" | "typescript" = "javascript";
+  public lang: "javascript" | "typescript" | "python" = "javascript";
   needMigrate: boolean | undefined;
 
   constructor(
     testName: LocalDebugTestName,
-    lang: "javascript" | "typescript" = "javascript",
+    lang: "javascript" | "typescript" | "python" = "javascript",
     needMigrate?: boolean
   ) {
     super(testName);

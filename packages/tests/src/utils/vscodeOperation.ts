@@ -523,7 +523,7 @@ async function setInputTextWsl(
 export async function createNewProject(
   option: OptionType,
   appName: string,
-  lang?: "JavaScript" | "TypeScript",
+  lang?: "JavaScript" | "TypeScript" | "Python",
   testRootFolder?: string,
   appNameCopySuffix = "copy"
 ): Promise<void> {
@@ -898,14 +898,7 @@ export async function createNewProject(
       await driver.sleep(Timeout.input);
       await input.selectQuickPick("Azure OpenAI");
       await driver.sleep(Timeout.input);
-      // input fake Azure OpenAI Key
-      await input.setText("fake");
-      await driver.sleep(Timeout.input);
-      await input.confirm();
-      await driver.sleep(Timeout.input);
-      // input fake Azure OpenAI Endpoint
-      await input.setText("https://test.com");
-      await driver.sleep(Timeout.input);
+      // Skip to input OpenAI Key
       await input.confirm();
       await driver.sleep(Timeout.input);
       break;
@@ -1288,4 +1281,21 @@ export async function getOutputLogs(): Promise<string | undefined> {
     console.log("Can't get output log");
   }
   return;
+}
+
+export async function createEnvironmentWithPython() {
+  await execCommandIfExist("Python: Create Environment...", Timeout.webView);
+  const input = await InputBox.create();
+  const driver = VSBrowser.instance.driver;
+  await input.selectQuickPick("Venv");
+  await driver.sleep(Timeout.input);
+  await input.selectQuickPick("Python 3.11");
+  await driver.sleep(Timeout.input);
+  await driver.findElement(By.className("quick-input-check-all")).click();
+  await input.confirm();
+  await driver.sleep(Timeout.longTimeWait);
+  await getNotification(
+    "The following environment is selected",
+    Timeout.shortTimeWait
+  );
 }
