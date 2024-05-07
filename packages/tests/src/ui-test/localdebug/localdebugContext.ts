@@ -53,7 +53,7 @@ export class LocalDebugTestContext extends TestContext {
   public async before() {
     await super.before();
     await this.createProject();
-    await this.disableDebugConsole();
+    // await this.disableDebugConsole();
     const testFolder = path.resolve(this.testRootFolder, this.appName);
     await openExistingProject(testFolder);
   }
