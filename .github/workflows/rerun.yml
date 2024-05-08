@@ -126,7 +126,7 @@ jobs:
       - name: Setup project
         working-directory: ./
         run: |
-          npm run setup
+          pnpm --filter=@microsoft/teamsfx-test install
 
       - name: Clean resource
         if: always()
