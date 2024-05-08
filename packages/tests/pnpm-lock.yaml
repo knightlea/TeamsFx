@@ -18,8 +18,8 @@ dependencies:
     specifier: ^4.1.0
     version: 4.1.0
   '@azure/msal-node':
-    specifier: 2.6.6
-    version: 2.6.6
+    specifier: 2.6.4
+    version: 2.6.4
   '@microsoft/teamsapp-cli':
     specifier: workspace:*
     version: link:../cli
@@ -441,6 +441,11 @@ packages:
     engines: {node: '>=0.8.0'}
     dev: true
 
+  /@azure/msal-common@14.7.1:
+    resolution: {integrity: sha512-v96btzjM7KrAu4NSEdOkhQSTGOuNUIIsUdB8wlyB9cdgl5KqEKnTonHUZ8+khvZ6Ap542FCErbnTyDWl8lZ2rA==}
+    engines: {node: '>=0.8.0'}
+    dev: false
+
   /@azure/msal-common@14.8.1:
     resolution: {integrity: sha512-9HfBMDTIgtFFkils+o6gO/aGEoLLuc4z+QLLfhy/T1bTNPiVsX/9CjaBPMZGnMltN/IlMkU5SGGNggGh55p5xA==}
     engines: {node: '>=0.8.0'}
@@ -463,6 +468,15 @@ packages:
       jsonwebtoken: 9.0.2
       uuid: 8.3.2
     dev: true
+
+  /@azure/msal-node@2.6.4:
+    resolution: {integrity: sha512-nNvEPx009/80UATCToF+29NZYocn01uKrB91xtFr7bSqkqO1PuQGXRyYwryWRztUrYZ1YsSbw9A+LmwOhpVvcg==}
+    engines: {node: '>=16'}
+    dependencies:
+      '@azure/msal-common': 14.7.1
+      jsonwebtoken: 9.0.2
+      uuid: 8.3.2
+    dev: false
 
   /@azure/msal-node@2.6.6:
     resolution: {integrity: sha512-j+1hW81ccglIYWukXufzRA4O71BCmpbmCO66ECDyE9FuPno6SjiR+K+mIk4tg6aQ7/UO2QA/EnRmT6YN0EF1Hw==}

@@ -5,13 +5,18 @@ on:
     inputs:
       run_id:
         description: "run id"
-        required: true
+        required: false
         type: string
       max_attempts:
         description: "max attempts, default is 3"
         required: false
         default: "3"
         type: string
+      clean:
+        description: "clean up resource?"
+        required: false
+        default: false
+        type: boolean
 
   schedule:
     - cron: "0 16 * * *"
@@ -23,7 +28,7 @@ jobs:
   rerun:
     permissions:
       actions: write
-    if: ${{ github.event_name == 'workflow_dispatch' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.clean == 'false' }}
     runs-on: ubuntu-latest
     env:
       DEVTUNNEL_CLIENT_ID: ${{ secrets.TEST_CLEAN_CLIENT_ID }}
@@ -86,7 +91,7 @@ jobs:
   clean:
     name: Clean resource
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'schedule' }}
+    if: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.clean != 'false') }}
     defaults:
       run:
         working-directory: packages/tests
