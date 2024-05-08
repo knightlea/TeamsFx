@@ -12,6 +12,11 @@ on:
         required: false
         default: "3"
         type: string
+      cleanup:
+        description: "need clean up"
+        required: false
+        default: false
+        type: boolean
 
   schedule:
     - cron: "0 16 * * *"
@@ -23,7 +28,7 @@ jobs:
   rerun:
     permissions:
       actions: write
-    if: ${{ github.event_name == 'workflow_dispatch' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.cleanup == false }}
     runs-on: ubuntu-latest
     env:
       DEVTUNNEL_CLIENT_ID: ${{ secrets.TEST_CLEAN_CLIENT_ID }}
@@ -85,7 +90,7 @@ jobs:
   clean:
     name: Clean resource
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'schedule' }}
+    if: ${{ github.event_name == 'schedule' || github.event.inputs.cleanup == true }}
     defaults:
       run:
         working-directory: packages/tests
