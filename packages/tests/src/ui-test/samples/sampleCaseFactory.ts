@@ -319,8 +319,14 @@ export abstract class CaseFactory {
         this.timeout(Timeout.finishTestCase);
         await onAfter(sampledebugContext, env);
         setTimeout(() => {
-          if (successFlag) process.exit(0);
-          else process.exit(1);
+          if (successFlag) {
+            console.log('--------------- success --------------------')
+            process.exit(0);
+          }
+          else {
+            console.log('--------------- failed ---------------------')
+            process.exit(1);
+          }
         }, 30000);
       });
 
