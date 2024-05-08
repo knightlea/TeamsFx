@@ -48,12 +48,14 @@ export class GraphApiCleanHelper extends CleanHelper {
   public static async create(
     tenantId: string,
     clientId: string,
+    clientSecret: string,
     username: string,
     password: string
   ): Promise<GraphApiCleanHelper> {
     const token = await this.getUserToken(
       tenantId,
       clientId,
+      clientSecret,
       username,
       password
     );
@@ -63,6 +65,7 @@ export class GraphApiCleanHelper extends CleanHelper {
   private static async getUserToken(
     tenantId: string,
     clientId: string,
+    clientSecret: string,
     username: string,
     password: string
   ): Promise<string> {
@@ -70,6 +73,7 @@ export class GraphApiCleanHelper extends CleanHelper {
       auth: {
         clientId: clientId,
         authority: `https://login.microsoftonline.com/${tenantId}`,
+        clientSecret: clientSecret,
       },
     };
 
@@ -81,7 +85,7 @@ export class GraphApiCleanHelper extends CleanHelper {
       password: encodeURIComponent(password),
     };
 
-    const pca = new msal.PublicClientApplication(config);
+    const pca = new msal.ConfidentialClientApplication(config);
     const credential = await pca.acquireTokenByUsernamePassword(
       usernamePasswordRequest
     );
@@ -213,12 +217,14 @@ export class SharePointApiCleanHelper extends CleanHelper {
   public static async create(
     tenantId: string,
     clientId: string,
+    clientSecret: string,
     username: string,
     password: string
   ): Promise<SharePointApiCleanHelper> {
     const token = await this.getSharePointUserToken(
       tenantId,
       clientId,
+      clientSecret,
       username,
       password
     );
@@ -228,6 +234,7 @@ export class SharePointApiCleanHelper extends CleanHelper {
   private static async getSharePointUserToken(
     tenantId: string,
     clientId: string,
+    clientSecret: string,
     username: string,
     password: string
   ): Promise<string> {
@@ -235,6 +242,7 @@ export class SharePointApiCleanHelper extends CleanHelper {
       auth: {
         clientId: clientId,
         authority: `https://login.microsoftonline.com/${tenantId}`,
+        clientSecret: clientSecret,
       },
     };
     const domainName = username.match(/(?<=@)\w+?(?=\.)/i);
@@ -247,7 +255,7 @@ export class SharePointApiCleanHelper extends CleanHelper {
       password: encodeURIComponent(password),
     };
 
-    const pca = new msal.PublicClientApplication(config);
+    const pca = new msal.ConfidentialClientApplication(config);
     const credential = await pca.acquireTokenByUsernamePassword(
       usernamePasswordRequest
     );
@@ -379,12 +387,14 @@ export class M365TitleCleanHelper extends CleanHelper {
   public static async create(
     tenantId: string,
     clientId: string,
+    clientSecret: string,
     username: string,
     password: string
   ): Promise<M365TitleCleanHelper> {
     const token = await this.getUserToken(
       tenantId,
       clientId,
+      clientSecret,
       username,
       password
     );
@@ -394,6 +404,7 @@ export class M365TitleCleanHelper extends CleanHelper {
   private static async getUserToken(
     tenantId: string,
     clientId: string,
+    clientSecret: string,
     username: string,
     password: string
   ): Promise<string> {
@@ -401,6 +412,7 @@ export class M365TitleCleanHelper extends CleanHelper {
       auth: {
         clientId: clientId,
         authority: `https://login.microsoftonline.com/${tenantId}`,
+        clientSecret: clientSecret,
       },
     };
 
@@ -412,7 +424,7 @@ export class M365TitleCleanHelper extends CleanHelper {
       password: encodeURIComponent(password),
     };
 
-    const pca = new msal.PublicClientApplication(config);
+    const pca = new msal.ConfidentialClientApplication(config);
     const credential = await pca.acquireTokenByUsernamePassword(
       usernamePasswordRequest
     );
@@ -477,15 +489,22 @@ export class DevTunnelCleanHelper {
 
   public static async create(
     tenantId: string,
+    clientSecret: string,
     username: string,
     password: string
   ): Promise<DevTunnelCleanHelper> {
-    const token = await this.getToken(tenantId, username, password);
+    const token = await this.getToken(
+      tenantId,
+      clientSecret,
+      username,
+      password
+    );
     return new DevTunnelCleanHelper(token);
   }
 
   private static async getToken(
     tenantId: string,
+    clientSecret: string,
     username: string,
     password: string
   ): Promise<string> {
@@ -493,6 +512,7 @@ export class DevTunnelCleanHelper {
       auth: {
         clientId: "7ea7c24c-b1f6-4a20-9d11-9ae12e9e7ac0",
         authority: `https://login.microsoftonline.com/${tenantId}`,
+        clientSecret: clientSecret,
       },
     };
 
@@ -502,7 +522,7 @@ export class DevTunnelCleanHelper {
       password: encodeURIComponent(password),
     };
 
-    const pca = new msal.PublicClientApplication(config);
+    const pca = new msal.ConfidentialClientApplication(config);
     const credential = await pca.acquireTokenByUsernamePassword(
       usernamePasswordRequest
     );
@@ -636,6 +656,7 @@ export async function cleanUpAadApp(
   const cleanService = await GraphApiCleanHelper.create(
     Env.cleanTenantId,
     Env.cleanClientId,
+    Env.cleanClientSecret,
     Env.username,
     Env.password
   );
@@ -676,6 +697,7 @@ export async function cleanTeamsApp(appName: string) {
     const cleanService = await GraphApiCleanHelper.create(
       Env.cleanTenantId,
       Env.cleanClientId,
+      Env.cleanClientSecret,
       Env.username,
       Env.password
     );

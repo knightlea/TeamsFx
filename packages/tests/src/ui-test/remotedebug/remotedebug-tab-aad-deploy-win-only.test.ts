@@ -85,6 +85,7 @@ describe("Remote debug Tests", function () {
       const cleanService = await GraphApiCleanHelper.create(
         Env.cleanTenantId,
         Env.cleanClientId,
+        Env.cleanClientSecret,
         Env.username,
         Env.password
       );

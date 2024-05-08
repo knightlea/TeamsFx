@@ -1,6 +1,6 @@
-/**
- * @author Xiaofu Huang <xiaofu.huang@microsoft.com>
- */
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+
 import * as path from "path";
 import * as chai from "chai";
 import { VSBrowser } from "vscode-extension-tester";
@@ -72,6 +72,7 @@ describe("Local Debug Tests", function () {
       const cleanService = await GraphApiCleanHelper.create(
         Env.cleanTenantId,
         Env.cleanClientId,
+        Env.cleanClientSecret,
         Env.username,
         Env.password
       );

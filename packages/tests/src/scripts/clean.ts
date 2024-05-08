@@ -24,6 +24,7 @@ async function main() {
   const cleanService = await GraphApiCleanHelper.create(
     Env.cleanTenantId,
     Env.cleanClientId,
+    Env.cleanClientSecret,
     Env.username,
     Env.password
   );
@@ -119,6 +120,7 @@ async function main() {
   const sharePointCleanService = await SharePointApiCleanHelper.create(
     Env.cleanTenantId,
     Env.cleanClientId,
+    Env.cleanClientSecret,
     Env.username,
     Env.password
   );
@@ -140,6 +142,7 @@ async function main() {
   console.log(`clean dev tunnel`);
   const devTunnelCleanHelper = await DevTunnelCleanHelper.create(
     Env.cleanTenantId,
+    Env.cleanClientSecret,
     Env.username,
     Env.password
   );
@@ -154,6 +157,7 @@ async function main() {
     const m365TitleCleanService = await M365TitleCleanHelper.create(
       Env.cleanTenantId,
       "7ea7c24c-b1f6-4a20-9d11-9ae12e9e7ac0",
+      Env.cleanClientSecret,
       Env.username,
       Env.password
     );

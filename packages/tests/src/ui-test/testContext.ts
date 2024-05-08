@@ -105,6 +105,7 @@ export class TestContext {
       const cleanService = await GraphApiCleanHelper.create(
         Env.cleanTenantId,
         Env.cleanClientId,
+        Env.cleanClientSecret,
         Env.username,
         Env.password
       );
@@ -150,6 +151,7 @@ export class TestContext {
       }
       const devTunnelCleanHelper = await DevTunnelCleanHelper.create(
         Env.cleanTenantId,
+        Env.cleanClientSecret,
         Env.username,
         Env.password
       );

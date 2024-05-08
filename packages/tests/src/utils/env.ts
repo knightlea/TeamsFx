@@ -31,6 +31,10 @@ export class Env {
     return this.getVal("CLEAN_CLIENT_ID", process.env.CLEAN_CLIENT_ID);
   }
 
+  static get cleanClientSecret() {
+    return this.getVal("CLEAN_CLIENT_SECRET", process.env.CLEAN_CLIENT_SECRET);
+  }
+
   static get azureAccountName() {
     return this.getVal("AZURE_ACCOUNT_NAME", process.env.AZURE_ACCOUNT_NAME);
   }
@@ -73,7 +77,7 @@ export class Env {
   }
 
   static get AZURE_CLIENT_ID() {
-    return this.getVal("AZURE_CLIENT_ID", process.env.AZURE_CLIENT_ID);
+    return this.getVal("AZURE_CLIENT_SECRET", process.env.AZURE_CLIENT_ID);
   }
 
   static get AZURE_CLIENT_SECRET() {
