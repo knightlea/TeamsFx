@@ -421,10 +421,10 @@ export class CliHelper {
     options = "",
     processEnv?: NodeJS.ProcessEnv
   ) {
-    const command = `teamsapp new --interactive false --app-name ${appName} --capability ${capability} --programming-language ${lang} ${options} --telemetry false`;
+    const command = `teamsfx new --interactive false --app-name ${appName} --capability ${capability} --programming-language ${lang} ${options} --telemetry false`;
     const timeout = 100000;
     try {
-      const { stdout } = await Executor.execute("teamsapp -v", testFolder);
+      const { stdout } = await Executor.execute("teamsfx -v", testFolder);
       console.log(stdout);
       await Executor.execute(command, testFolder);
       const message = `scaffold project to ${path.resolve(
