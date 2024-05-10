@@ -64,16 +64,16 @@ export class RemoteDebugTestContext extends TestContext {
     hasApimPlugin = false,
     envName = "dev"
   ) {
-    const cleanUpAadAppPromise = cleanUpAadApp(
-      projectPath,
-      hasAadPlugin,
-      hasBotPlugin,
-      hasApimPlugin,
-      envName
-    );
+    // const cleanUpAadAppPromise = cleanUpAadApp(
+    //   projectPath,
+    //   hasAadPlugin,
+    //   hasBotPlugin,
+    //   hasApimPlugin,
+    //   envName
+    // );
     return Promise.all([
       // delete aad app
-      cleanUpAadAppPromise,
+      // cleanUpAadAppPromise,
       // uninstall Teams app
       cleanTeamsApp(appName),
       // delete Teams app in app studio
@@ -81,7 +81,7 @@ export class RemoteDebugTestContext extends TestContext {
       // remove resouce group
       cleanUpResourceGroup(appName, envName),
       // remove project
-      cleanUpLocalProject(projectPath, cleanUpAadAppPromise),
+      // cleanUpLocalProject(projectPath, cleanUpAadAppPromise),
     ]);
   }
 }

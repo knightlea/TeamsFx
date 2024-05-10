@@ -123,17 +123,17 @@ export class SampledebugContext extends TestContext {
     hasBotPlugin = false,
     hasApimPlugin = false,
     envName = "dev"
-  ): Promise<[boolean[] | undefined, void, void, boolean, boolean]> {
-    const cleanUpAadAppPromise = cleanUpAadApp(
-      projectPath,
-      hasAadPlugin,
-      hasBotPlugin,
-      hasApimPlugin,
-      envName
-    );
+  ) {
+    // const cleanUpAadAppPromise = cleanUpAadApp(
+    //   projectPath,
+    //   hasAadPlugin,
+    //   hasBotPlugin,
+    //   hasApimPlugin,
+    //   envName
+    // );
     return Promise.all([
       // delete aad app
-      cleanUpAadAppPromise,
+      // cleanUpAadAppPromise,
       // uninstall Teams app
       cleanTeamsApp(appName),
       // delete Teams app in app studio
@@ -141,7 +141,7 @@ export class SampledebugContext extends TestContext {
       // remove resouce group
       cleanUpResourceGroup(appName, envName),
       // remove project
-      cleanUpLocalProject(projectPath, cleanUpAadAppPromise),
+      // cleanUpLocalProject(projectPath, cleanUpAadAppPromise),
     ]);
   }
 
