@@ -62,11 +62,9 @@
     "workspaceContains:/manifest*.xml"
   ],
   "enabledApiProposals": [
-    "chatParticipant",
     "chatParticipantAdditions",
     "chatProvider",
     "chatVariableResolver",
-    "languageModels",
     "languageModelSystem"
   ],
   "capabilities": {
