@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
-import { AzureScopes } from "@microsoft/teamsfx-core/build/common/tools";
 import * as chai from "chai";
 import MockAzureAccountProvider from "@microsoft/teamsapp-cli/src/commonlib/azureLoginUserPassword";
 import {
@@ -18,6 +17,7 @@ import {
   getExpectedM365ApplicationIdUri,
 } from "./utilities";
 
+const AzureScopes = ["https://management.core.windows.net/user_impersonation"];
 export class PropertiesKeys {
   static clientId = "CLIENT_ID";
   static clientSecret = "CLIENT_SECRET";
