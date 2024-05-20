@@ -528,7 +528,6 @@ jobs:
 
   test-plan-update:
     needs: main
-    if: ${{ github.event.inputs.target-testplan-name != '' }}
     environment: engineering
     permissions:
       id-token: write
